@@ -7,19 +7,21 @@ import Common  from 'components';
 import loadsh from 'loadsh'
 import 'normalize.css'
 import 'iview/dist/styles/iview.css';
+import './mock'
+import clickoutside from './utils/clickoutside'
 import { Icon, Button, Form, FormItem, Input, Radio,Message,Layout,Header,Menu, Sider,Content,
   Submenu,
   MenuItem,Breadcrumb,BreadcrumbItem } from 'iview';
 Vue.config.productionTip = false;
 Vue.config.devtools = true;
 
+Vue.use(Common)
 Vue.use(Icon)
 Vue.use(Button)
 Vue.use(Form)
 Vue.use(FormItem)
 Vue.use(Input)
 Vue.use(Radio)
-Vue.use(Common)
 Vue.use(Layout)
 Vue.use(Header)
 Vue.use(Menu)
@@ -33,7 +35,7 @@ Vue.use(BreadcrumbItem)
 Vue.prototype.$http = Axios;
 Vue.prototype.$Message = Message;
 global._ = loadsh;
-
+Vue.directive('out',clickoutside)
 new Vue({
   router,
   store,

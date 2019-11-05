@@ -61,7 +61,7 @@ export default {
                         console.log(params)
                         let res = await this.$http.Common.login(params);
                         console.log(res)
-                        if(res.data.succes){
+                        if(res.data.success){
                             localStorage.setItem('Token',res.data.token)
                             console.log(res.headers['token'])
                             this.$Message.success('登录成功!');
