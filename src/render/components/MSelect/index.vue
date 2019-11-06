@@ -50,7 +50,6 @@ export default {
   },
   methods: {
       clickOut(){
-          console.log('ooooo')
           console.log(this)
           if(!this.isShow)return;
           this.isShow = false;
