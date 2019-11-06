@@ -1,13 +1,13 @@
 <template>
-  <div class="e-select-wrapper" ref="select" v-out="clickOut">
+  <div class="e-select-wrapper" ref="select" v-clickoutside="clickOut">
     <div class="input">
-      <input type="text" ref="input" :placeholder="placeholder" readonly @click.stop="toggle" />
-      <Icon v-show="!isShow" size="30" class="down" @click.stop="toggle" type="md-arrow-dropdown" />
-      <Icon v-show="isShow" size="30" class="up" @click.stop="toggle" type="md-arrow-dropup" />
+      <input type="text" ref="input" :value="currentValue" :placeholder="placeholder" readonly @click="toggle" />
+      <Icon v-show="!isShow" size="30" class="down" @click="toggle" type="md-arrow-dropdown" />
+      <Icon v-show="isShow" size="30" class="up" @click="toggle" type="md-arrow-dropup" />
       <ul v-show="isShow">
         <li
           v-for="(item,index) in selectOptions"
-          :key="item.value"
+          :key="item.value+index"
           @click.stop="handleClickItem(item)"
         >{{ item.label }}</li>
       </ul>
@@ -16,9 +16,13 @@
 </template>
 
 <script>
+import clickoutside from '@/utils/clickoutside'
 import { Icon } from "iview";
 export default {
   name: "m-select",
+  directives:{
+    clickoutside
+  },
   components: {
     Icon
   },
@@ -40,16 +44,9 @@ export default {
   },
   data() {
     return {
-      isShow: false
+      isShow: false,
+      currentValue: null
     };
-  },
-  mounted() {
-    this.toggle = this.toggle.bind(this);
-    // this.handleClickOut = this.handleClickOut.bind(this);
-    // document.addEventListener("click", this.handleClickOut, false);
-  },
-  destroyed() {
-    // document.removeEventListener("click", this.handleClickOut, false);
   },
   methods: {
       clickOut(){
@@ -58,36 +55,13 @@ export default {
           if(!this.isShow)return;
           this.isShow = false;
       },
-    // handleClickOut(e) {
-    //     console.log('out',this.isShow)
-    //   if (!this.isShow) return;
-    //   let arr = _.without(this.$parent.$children,this);
-    //   arr.map((i) => {
-    //       if(i.$options._componentTag=='m-select'){
-    //           console.log(i)
-    //           i.isShow = false
-    //       }
-    //       return i
-    //   } )
-    //   if (e.target.contains(this.$refs.select)) {
-    //     this.isShow = false;
-    //   }
-    // },
     toggle() {
-        console.log('toggle')
       this.isShow = !this.isShow;
       this.$refs.input.focus();
     },
     handleClickItem(item) {
-    let arr = _.without(this.$parent.$children,this);
-      arr.map((i) => {
-          if(i.$options._componentTag=='m-select'){
-              console.log(i)
-              i.isShow = false
-          }
-          return i
-      } )
-      this.$refs.input.value = item.label;
+      this.currentValue = item.label
+      // this.$refs.input.value = item.label;
       this.isShow = false;
       this.$emit("on-select", item);
     }
