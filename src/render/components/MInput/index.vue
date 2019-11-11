@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import emitter from '../../mixin/emitter'
+import emitter from '../../mixins/emitter'
 export default {
   name: "m-input",
   mixins:[emitter],

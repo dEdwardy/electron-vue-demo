@@ -1,7 +1,7 @@
-import HelloWorld from './HelloWorld';
 import MInput from './MInput/index.vue'
 import MSelect from './MSelect/index.vue'
-const components = [HelloWorld,MInput,MSelect];
+
+const components = [MInput,MSelect];
 
 const install = function(Vue,config = {}){
     if(install.installed) return;
