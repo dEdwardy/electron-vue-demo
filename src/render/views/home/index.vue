@@ -18,6 +18,7 @@
 </template>
 
 <script>
+// import { ipcRenderer } from 'electron'
 import MInput from '../../components/MInput/index'
 import MSelect from '../../components/MSelect/index'
 export default {
@@ -57,6 +58,7 @@ export default {
         },
         handleSelect(val){
             this.selectOp = val.value;
+            // ipcRenderer.send('select',val.value)
         },
         handleSelect2(val){
             this.selectOp2 = val.value;

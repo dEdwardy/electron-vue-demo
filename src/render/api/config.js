@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const Axios = axios.create({
-    baseURL: '',
+    baseURL: 'http://localhost:3000',
     timeout: 20000,
     withCredentials: true, // 是否允许带cookie这些
     headers: {

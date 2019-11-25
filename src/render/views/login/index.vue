@@ -21,6 +21,7 @@
 </template>
 
 <script>
+// import { ipcRenderer } from 'electron'
 import API from '@/api'
 import { Icon, Button, Form, FormItem, Input, Radio } from "iview";
 export default {
@@ -50,6 +51,14 @@ export default {
                 }
             }
         },
+        sockets:{
+          connect(){
+            console.log('连接成功')
+          },
+          disconnect(){
+            console.log('断开连接')
+          }
+        },
         methods:{
               handleSubmit(name) {
                 this.$refs[name].validate(async(valid) => {
@@ -61,10 +70,15 @@ export default {
                         console.log(params)
                         let res = await this.$http.Common.login(params);
                         console.log(res)
-                        if(res.data.success){
+                        if(res.data && res.data.status ===200){
                             localStorage.setItem('Token',res.data.token)
                             console.log(res.headers['token'])
+                            this.$socket.emit('login',{ });
                             this.$Message.success('登录成功!');
+                            // ipcRenderer.send('notify',{
+                            //   notify:true,
+                            //   detail:'登录成功'
+                            // });
                             setTimeout(() => {
                                 this.$router.push({
                                 name:'home'

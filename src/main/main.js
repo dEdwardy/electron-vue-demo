@@ -1,9 +1,10 @@
 'use strict'
 
-import { app, protocol, BrowserWindow } from 'electron'
+import { app, protocol, BrowserWindow, Notification, ipcMain } from 'electron'
 import {
   createProtocol
 } from 'vue-cli-plugin-electron-builder/lib'
+
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -73,7 +74,15 @@ app.on('ready', async () => {
   }
   createWindow()
 })
-
+ipcMain.on('select', (event, args) => {
+  event.sender.send('ranger that')
+  let notify = new Notification({
+    title:'Tips',
+    body:'Choose'+args,
+    silent: false,
+  })
+  notify.show()
+})
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {
   if (process.platform === 'win32') {
