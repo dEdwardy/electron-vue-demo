@@ -55,13 +55,14 @@ export default {
     },
     async mounted(){
          const res = await this.$http.Common.friendsList();
-         res.data.data.friends.map(i =>{
+        if(res && res.data.data.friends.length>0){
+             res.data.data.friends.map(i =>{
              i.content = '呵呵'+Math.random(1,2).toFixed(2)+'嘿嘿',
              i.status = Math.random(0,1)>0.5? 'online':'offline',
              i.avatar = 'http://pic4.zhimg.com/50/v2-0019ec92840b3cda9c12445d4452e4a5_hd.jpg'
          }) 
-        console.log(res.data.data.friends)
-        this.list = res.data.data.friends
+        }
+        this.list = res.data.data.friends;
     },
     methods:{
         async chatTo(friend){

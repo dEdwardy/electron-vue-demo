@@ -14,6 +14,20 @@ export default {
       const name = ["login"];
       return name.includes(this.$route.name);
     }
+  },
+  mounted() {
+    this.$socket.on("online", data => {
+      console.log(data);
+    });
+    this.$socket.on("friends-fresh", data => {
+      console.log(data)
+    });
+    // this.$socket.on("friends-on", data => {
+    //   console.log(data);
+    // });  
+    // this.$socket.on("friends-off", data => {
+    //   console.log(data);
+    // });
   }
 };
 </script>
@@ -28,4 +42,3 @@ body,
   line-height: 1;
 }
 </style>
-  
