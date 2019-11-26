@@ -2,7 +2,7 @@
     <div class="m-layout-wrapper">
         <m-header></m-header>
         <div class="m-body-wrapper">
-            <Split v-model="split" :min="min" :max="max">
+            <Split v-model="split">
                 <div slot="left" class="left-content">
                     <m-sider></m-sider>
                 </div>
@@ -26,11 +26,15 @@ export default {
         MContainer,
         Split
     },
+    mounted(){
+        console.log(this.$socket)
+        this.$socket.on('online',(data) => {
+            console.log(data)
+        });
+    },
     data(){
         return {
             split:0.3,
-            min:0.2,
-            max:0.8,
         }
     }
 }

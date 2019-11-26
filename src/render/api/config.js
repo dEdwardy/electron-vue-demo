@@ -10,20 +10,14 @@ const Axios = axios.create({
   });
   //拦截request
 Axios.interceptors.request.use(config => {
-    console.log('拦截req')
-    // console.log(config)
-    // console.log(config.url.indexOf('checkUser')==-1)
-    // if(config.url.indexOf('checkUser')>=-1){
-    //     //将凭证添加到req headers中
-    //     //config.header[***] = ***;
-    //     config.headers[Token] = localStorage.getItem('Token') ||''
-    // }
-    // if(localStorage.getItem('Token'))
-    // config.headers['Token'] = localStorage.getItem('Token')
+    let token = localStorage.getItem('Token');
+    if(token){
+        config.headers['Authorization'] = `Bearer ${token}`;
+    }
     return config
-},err => {
-    console.log('req error')
-    throw(err)
+},error => {
+    console.log(error)
+    return Promise.error(error);
 })
 //拦截response
 Axios.interceptors.response.use(res => {

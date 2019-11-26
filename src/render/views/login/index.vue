@@ -67,13 +67,12 @@ export default {
                             username:this.formInline.user,
                             password:this.formInline.password
                         }
-                        console.log(params)
                         let res = await this.$http.Common.login(params);
-                        console.log(res)
-                        if(res.data && res.data.status ===200){
-                            localStorage.setItem('Token',res.data.token)
-                            console.log(res.headers['token'])
-                            this.$socket.emit('login',{ });
+                        if(res && res.data && res.data.status ===200){
+                            localStorage.setItem('Token',res.data.data.token)
+                            // const friends = await this.$http.Common.friendsList();
+                            // console.log(friends)
+                            this.$socket.emit('login',{ id:res.data.data.id});
                             this.$Message.success('登录成功!');
                             // ipcRenderer.send('notify',{
                             //   notify:true,
@@ -82,14 +81,12 @@ export default {
                             setTimeout(() => {
                                 this.$router.push({
                                 name:'home'
-                            })}, 200);
+                            })}, 1000);
                             
                         }else{
                             this.$Message.warning('账号或密码错误!');
                         }
-                    } else {
-                        this.$Message.error('出错啦!');
-                    }
+                    } 
                 })
             }
         }
@@ -105,6 +102,7 @@ export default {
   width: 100%;
   height: 100%;
   position: relative;
+  padding: 15px;
   background-image: url('~@/assets/imgs/1.jpg');
   background-repeat: no-repeat;
   background-size: 100% 100%;

@@ -15,8 +15,7 @@ import { Icon, Button, Form, FormItem, Input, Radio,Message,Layout,Header,Menu, 
 Vue.config.productionTip = false;
 Vue.config.devtools = true;
 Vue.use(new VueSocketIO({
-  debug:true,
-  connection:'http://localhost:3000'
+  connection:'http://localhost:3000',
 }))
 Vue.use(Common)
 Vue.use(Icon)
