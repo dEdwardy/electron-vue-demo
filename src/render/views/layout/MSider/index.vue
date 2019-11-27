@@ -7,18 +7,26 @@
             <img
               :src="friend.avatar"
               class="avatar"
-              :class="friend.status=='online'? 'online':'offline'"
+              :class="friend.status == 'online' ? 'online' : 'offline'"
             />
           </Col>
-          <Col span="17">
+          <Col span="14">
             <div class="username">
-              <span>{{friend.username}}</span>
+              <span>{{ friend.username }}</span>
             </div>
             <div class="content">
               <span>
                 <!-- {{friend.content}} -->
               </span>
             </div>
+          </Col>
+          <Col span="3">
+            <Badge
+              v-show="showBadge(friend).show"
+              class="badge"
+              :count="showBadge(friend).num"
+              type="error"
+            ></Badge>
           </Col>
         </Row>
       </div>
@@ -28,39 +36,68 @@
 
 <script>
 import { mapGetters } from "vuex";
-import { Row, Col } from "iview";
+import { Row, Col, Badge } from "iview";
 export default {
   name: "m-sider",
   computed: {
-    ...mapGetters(["onlineList", "friendsList"])
+    ...mapGetters(["onlineList", "friendsList", "messages"])
+    //1.friend当前在线 2.有未读消息 3.没有和当前friend聊天
   },
   components: {
     Row,
-    Col
+    Col,
+    Badge
   },
   mounted() {
     // this.getFriendsList();
   },
   methods: {
-    // async getFriendsList() {
-    //   const res = await this.$http.Common.friendsList();
-    //   if (res && res.data.data.friends.length > 0) {
-    //     res.data.data.friends.map(i => {
-    //       i.content = "呵呵" + Math.random(1, 2).toFixed(2) + "嘿嘿";
-    //       // i.status ="offline";
-    //       i.avatar = "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3031331030,3423517444&fm=26&gp=0.jpg";
-    //     });
-    //   }
-    //   this.$store.commit("SET_FRIENDS_LIST", res.data.data.friends);
-    // },
+    showBadge(friend) {
+      console.log(this.onlineList)
+      console.log(this.messages)
+      let num = 0;
+      if (friend.status == "online") {
+        if (this.messages && this.messages.length > 0) {
+          this.messages.map(i => {
+            if (i.from === friend) {
+              num++;
+            }
+          });
+        } else {
+          return { show: false, num };
+        }
+        let data = this.$router.query.data
+          ? JSON.parse(this.$router.query.data)
+          : null;
+        return num > 0 && (!data || data.id !== friend.id)
+          ? { show: true, num }
+          : { show: false, num };
+      } else {
+        return { show: false, num };
+      }
+    },
+    async getFriendsList() {
+      const res = await this.$http.Common.friendsList();
+      if (res && res.data.data.friends.length > 0) {
+        res.data.data.friends.map(i => {
+          i.content = "呵呵" + Math.random(1, 2).toFixed(2) + "嘿嘿";
+          // i.status ="offline";
+          i.avatar =
+            "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3031331030,3423517444&fm=26&gp=0.jpg";
+        });
+      }
+      this.$store.commit("SET_FRIENDS_LIST", res.data.data.friends);
+    },
     chatTo(friend) {
       console.log(friend);
-      this.$router.push({
-        name: "chat",
-        query: {
-          data: JSON.stringify(friend)
-        }
-      }).catch((e) => { })
+      this.$router
+        .push({
+          name: "chat",
+          query: {
+            data: JSON.stringify(friend)
+          }
+        })
+        .catch(e => {});
     }
   }
 };
@@ -98,6 +135,9 @@ export default {
         color: #545454;
         font-size: 14px;
         margin-bottom: 14px;
+      }
+      .badge {
+        margin: 19px 0;
       }
     }
   }

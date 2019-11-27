@@ -73,6 +73,7 @@ export default {
     },
     chat_to(data) {
       console.log(data)
+      this.$store.commit('SET_MESSAGES',data);
     }
   },
   created() {
