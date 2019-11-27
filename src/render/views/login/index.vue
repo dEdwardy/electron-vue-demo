@@ -22,7 +22,7 @@
 
 <script>
 // import { ipcRenderer } from 'electron'
-import API from '@/api'
+import API from "@/api";
 import { Icon, Button, Form, FormItem, Input, Radio } from "iview";
 export default {
   name: "login",
@@ -34,88 +34,80 @@ export default {
     Icon,
     Button
   },
-  data(){
-      return{
-           formInline: {
-                    user: '',
-                    password: ''
-                },
-                ruleInline: {
-                    user: [
-                        { required: true, message: '请输入用户名', trigger: 'blur' }
-                    ],
-                    password: [
-                        { required: true, message: '请输入密码', trigger: 'blur' },
-                        { type: 'string', min: 6, message: '密码长度不能低于6位', trigger: 'blur' }
-                    ]
-                }
-            }
-        },
-        sockets:{
-          connect(){
-            console.log('连接成功')
-          },
-          disconnect(){
-            console.log('断开连接')
+  data() {
+    return {
+      formInline: {
+        user: "",
+        password: ""
+      },
+      ruleInline: {
+        user: [{ required: true, message: "请输入用户名", trigger: "blur" }],
+        password: [
+          { required: true, message: "请输入密码", trigger: "blur" },
+          {
+            type: "string",
+            min: 6,
+            message: "密码长度不能低于6位",
+            trigger: "blur"
           }
-        },
-        methods:{
-              handleSubmit(name) {
-                this.$refs[name].validate(async(valid) => {
-                    if (valid) {
-                        let params = {
-                            username:this.formInline.user,
-                            password:this.formInline.password
-                        }
-                        let res = await this.$http.Common.login(params);
-                        if(res && res.data && res.data.status ===200){
-                            localStorage.setItem('Token',res.data.data.token)
-                            // const friends = await this.$http.Common.friendsList();
-                            // console.log(friends)
-                            this.$socket.emit('login',{ id:res.data.data.id});
-                            this.$Message.success('登录成功!');
-                            // ipcRenderer.send('notify',{
-                            //   notify:true,
-                            //   detail:'登录成功'
-                            // });
-                            setTimeout(() => {
-                                this.$router.push({
-                                name:'home'
-                            })}, 1000);
-                            
-                        }else{
-                            this.$Message.warning('账号或密码错误!');
-                        }
-                    } 
-                })
-            }
+        ]
+      }
+    };
+  },
+  methods: {
+    handleSubmit(name) {
+      this.$refs[name].validate(async valid => {
+        if (valid) {
+          let params = {
+            username: this.formInline.user,
+            password: this.formInline.password
+          };
+          let res = await this.$http.Common.login(params);
+          if (res && res.data && res.data.status === 200) {
+            this.$store.commit('SET_USER_INFO',res.data.data)
+            localStorage.setItem("Token", res.data.data.token);
+            localStorage.setItem("userinfo", JSON.stringify(res.data.data));
+            this.$Message.success("登录成功!");
+            // ipcRenderer.send('notify',{
+            //   notify:true,
+            //   detail:'登录成功'
+            // });
+            setTimeout(() => {
+              this.$router.push({
+                name: "home"
+              });
+            }, 1000);
+          } else {
+            this.$Message.warning("账号或密码错误!");
+          }
         }
-
+      });
     }
+  }
+};
 </script>
 
 <style lang="scss" scoped>
-.login >>> .ivinput{
-    height: 36px;
+.login >>> .ivinput {
+  height: 36px;
 }
 .login {
   width: 100%;
   height: 100%;
   position: relative;
   padding: 15px;
-  background-image: url('~@/assets/imgs/1.jpg');
+  background-image: url("~@/assets/imgs/1.jpg");
   background-repeat: no-repeat;
   background-size: 100% 100%;
-  .loginForm{
-      text-align: center;
-      position: absolute;
-      top:50%;
-      left:50%;
-      transform: translate(-50%,-50%);
-      padding:40px 40px 6px 40px;
-      border-radius: 6px;
-      background-color: rgba(0,0,0,0.2);
-      
+  .loginForm {
+    text-align: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 40px 40px 6px 40px;
+    border-radius: 6px;
+    background-color: rgba(0, 0, 0, 0.2);
   }
 }
 </style>
