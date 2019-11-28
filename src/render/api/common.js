@@ -11,5 +11,7 @@ export default class Common{
             .then(res => res)
             .catch(e =>e)
     }
-
+    static getUserByName(name){
+        return API.get('/users/username/'+name)
+    }
 }
