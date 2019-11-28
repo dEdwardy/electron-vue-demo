@@ -29,30 +29,28 @@ export default {
   },
   watch: {
       value(val){
-        console.log(val)
+        // console.log(val)
           this.setCurrentValue(val)
       },
       rules(...args){
-        console.log(args)
         if(args.length===1){
-          console.log('11')
           this.currentValue = this.currentValue.slice(0,args[0])
         }
       }
   },
   methods: {
     setCurrentValue(value) {
-      console.log(value);
+      // console.log(value);
       if (value === this.currentValue) return;
       this.currentValue = value;
     },
     inputload(event) {
       let value = event.target.value;
-      console.log(this.$parent.$children.map(i => {
-        i.currentValue = value
-        return i
-      }))
-      console.log(this.$parent.$children.includes(this))
+      // console.log(this.$parent.$children.map(i => {
+      //   i.currentValue = value
+      //   return i
+      // }))
+      // console.log(this.$parent.$children.includes(this))
       let arr = _.without(this.$parent.$children,this);
       arr.map(item => {
         item.currentValue = ''

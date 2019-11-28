@@ -1,14 +1,10 @@
 <template>
   <div class="m-sider-wrapper">
     <div v-for="friend in friendsList" :key="friend.id">
-      <div class="friends" @dblclick="chatTo(friend)">
+      <div class="friends" @click="chatTo(friend)">
         <Row class="friend">
           <Col span="7">
-            <img
-              :src="friend.avatar"
-              class="avatar"
-              :class="friend.status == 'online' ? 'online' : 'offline'"
-            />
+            <img :src="friend.avatar" class="avatar" :class="friend.online ? 'online' : 'offline'" />
           </Col>
           <Col span="14">
             <div class="username">
@@ -53,43 +49,39 @@ export default {
   },
   methods: {
     showBadge(friend) {
-      console.log(this.onlineList)
-      console.log(this.messages)
+      // console.log(this.onlineList)
+      // console.log(this.messages)
       let num = 0;
-      if (friend.status == "online") {
-        if (this.messages && this.messages.length > 0) {
-          this.messages.map(i => {
-            if (i.from === friend) {
-              num++;
-            }
-          });
-        } else {
-          return { show: false, num };
-        }
-        let data = this.$router.query.data
-          ? JSON.parse(this.$router.query.data)
-          : null;
-        return num > 0 && (!data || data.id !== friend.id)
-          ? { show: true, num }
-          : { show: false, num };
-      } else {
-        return { show: false, num };
-      }
-    },
-    async getFriendsList() {
-      const res = await this.$http.Common.friendsList();
-      if (res && res.data.data.friends.length > 0) {
-        res.data.data.friends.map(i => {
-          i.content = "呵呵" + Math.random(1, 2).toFixed(2) + "嘿嘿";
-          // i.status ="offline";
-          i.avatar =
-            "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3031331030,3423517444&fm=26&gp=0.jpg";
+      if (friend.online && this.messages.length > 0) {
+        this.messages.map(i => {
+          if (i.from === friend.id && i.unread) {
+            num++;
+          }
         });
+        let localRoute = this.$route.name;
+        if (num === 0) return { show: false, num };
+        if (localRoute && localRoute == "chat" ) {
+          let query = JSON.parse(this.$route.query.data)
+          // if(query && query.id == friend.id){
+          //   console.log("chat with"+ friend.id);
+          //   return { show:false, num }
+          // }
+          return { show: true, num };
+        }
       }
-      this.$store.commit("SET_FRIENDS_LIST", res.data.data.friends);
+        return { show:true, num }
     },
     chatTo(friend) {
       console.log(friend);
+      if(this.messages.length > 0){
+        this.messages.forEach((item,idx) => {
+          if(item.from == friend.id){
+            item.unread = false;
+          }
+        })
+        this.$store.commit('GET_MESSAGE',[...this.messages])
+        this.$store.commit('READ_MESSAGE')
+      }
       this.$router
         .push({
           name: "chat",
@@ -143,7 +135,21 @@ export default {
   }
 }
 .offline {
-  -webkit-filter: grayscale(100%); /* Chrome, Safari, Opera */
-  filter: grayscale(100%);
+  // -webkit-filter: grayscale(100%);
+  // filter: grayscale(100%);
+  -moz-filter: grayscale(100%);
+  -ms-filter: grayscale(100%);
+  -o-filter: grayscale(100%);
+  filter: progid:DXImageTransform.Microsoft.BasicImage(grayscale=1);
+  -webkit-filter: grayscale(1);
+}
+.online {
+  -webkit-filter: grayscale(0);
+  -moz-filter: grayscale(0);
+  -ms-filter: grayscale(0);
+  -o-filter: grayscale(0);
+  filter: url("about:blank");
+  filter: grayscale(0);
+  filter: rgb;
 }
 </style>

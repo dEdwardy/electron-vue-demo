@@ -67,6 +67,19 @@ export default {
             this.$store.commit('SET_USER_INFO',res.data.data)
             localStorage.setItem("Token", res.data.data.token);
             localStorage.setItem("userinfo", JSON.stringify(res.data.data));
+            let data =  await this.$http.Common.friendsList();
+            
+            if(data && data.data.data.friends.length>0){
+              data.data.data.friends.map(i =>{
+                i.content = '呵呵'+Math.random(1,2).toFixed(2)+'嘿嘿';
+                i.status = Math.random(0,1)>0.5? 'online':'offline';
+                i.avatar = 'http://pic4.zhimg.com/50/v2-0019ec92840b3cda9c12445d4452e4a5_hd.jpg';
+                i.online = false;
+             }) 
+            }
+
+            this.$store.commit('SET_FRIENDS_LIST',data.data.data.friends)
+            // console.log(data.data.data.friends)
             this.$Message.success("登录成功!");
             // ipcRenderer.send('notify',{
             //   notify:true,

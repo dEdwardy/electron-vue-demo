@@ -31,16 +31,27 @@ export default {
       }
     };
   },
+  watch:{
+    '$route'(to, from){
+      // console.log(to.query.data)
+      this.friend = JSON.parse(to.query.data)
+    }
+  },
   components:{
     Button
   },
+  breforeRouteUpdate(to,from ,next){
+    // console.log(to)
+    next()
+  },
   mounted() {
+    console.log('Chatting........')
     this.friend = JSON.parse(this.$route.query.data);
-    console.log(this.friend);
+    // console.log(this.friend);
   },
   methods:{
     send(){
-      let userinfo = localStorage.getItem('userinfo')
+      let userinfo = JSON.parse(localStorage.getItem('userinfo'))
       let input = document.getElementById('input');
       if(this.friend.id && input.value){
         //由于socketId 刷新时可能会改变 所以传id

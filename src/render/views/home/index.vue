@@ -1,7 +1,7 @@
 <template>
     <div class="home">
-        <MInput :value="value" @input="handleInput" />
-        <br>
+        <!-- <MInput :value="value" @input="handleInput" />
+        <br> -->
         <MInput :value="value1"  />
         <br>
         <MInput :value="value2"  />
@@ -54,7 +54,7 @@ export default {
     },
     methods:{
         handleInput(s){
-            console.log(s)
+            // console.log(s)
         },
         handleSelect(val){
             this.selectOp = val.value;

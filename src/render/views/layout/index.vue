@@ -40,9 +40,12 @@ export default {
           for (let item of friendsList) {
             if (item.id === online.id) {
               item.status = 'online';
+              item.online = true;
               item.socketId = online.socketId;
             }else{
               item.status = 'offline'
+              item.online = false;
+              item.socketId = null;
             }
           }
         }
@@ -51,7 +54,7 @@ export default {
           i.status = 'offline'
         })
       }
-      console.log(Object.assign([],friendsList))
+      // console.log(Object.assign([],friendsList))
       this.$store.commit("SET_FRIENDS_LIST", friendsList);
     },
     friends_fresh(data) {
@@ -62,18 +65,26 @@ export default {
         for (let online of data) {
           for (let item of friendsList) {
             if (item.id === online.id) {
-              item.status = "online";
+              item.status = 'online';
+              item.online = true;
               item.socketId = online.socketId;
             }
           }
         }
       }
-      console.log(friendsList)
+      if(data.length ===0 ){
+        for(let item of friendsList) {
+          item.status = 'offline';
+          item.online = false;
+          item.socketId = null;
+        }
+      }
+      // console.log(friendsList)
       this.$store.commit("SET_FRIENDS_LIST", friendsList);
     },
     chat_to(data) {
-      console.log(data)
-      this.$store.commit('SET_MESSAGES',data);
+      console.warn(data)
+      this.$store.commit('GET_MESSAGE',data);
     }
   },
   created() {

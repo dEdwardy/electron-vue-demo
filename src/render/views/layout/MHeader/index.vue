@@ -61,7 +61,7 @@ export default {
     .group {
       display: inline-block;
       .icon {
-          padding: 10px 16px;
+          padding: 11px 16px;
           cursor: pointer;
       }
     }
