@@ -32,7 +32,13 @@ export default {
     ...mapGetters(["friendsList"])
   },
   sockets: {
-    online(data) {
+    online({ online, messages}) {
+      console.log({ online, messages})
+      if(messages && messages.length > 0){
+        let m = messages.map(i => JSON.parse(i))
+        this.commit('SET_MESSAGER',m);
+      }
+      let data = online;
       this.$store.commit("SET_ONLINE_LIST", data);
       let friendsList = _.cloneDeep(this.friendsList);
       if ( data && data.length > 0 && friendsList && friendsList.length > 0) {
@@ -85,6 +91,9 @@ export default {
     chat_to(data) {
       console.warn(data)
       this.$store.commit('GET_MESSAGE',data);
+    },
+    messages(data) {
+
     }
   },
   created() {

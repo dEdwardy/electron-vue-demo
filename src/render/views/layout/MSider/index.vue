@@ -41,10 +41,23 @@
         <Divider type="vertical" />
         <span :style="{'color':showAddFriends? '':'rgb(1,136,251)'}" @click.stop="searchRoom">找群</span>
       </div>
-      <div style="text-align:center">
+      <div>
         <div style="padding:10px 0 30px 0">
-          <Input v-model.trim="id" v-if="showAddFriends" search @on-search="searchId" enter-button="Search" placeholder="请输入ID" />
-          <Input v-model.trim="roomId" v-else search  @on-search="searchRoomId" enter-button="Search" placeholder="请输入群ID" />
+          <Input v-model.trim="id" v-if="showAddFriends" search @on-search="search" enter-button="Search" placeholder="请输入ID" />
+          <Input v-model.trim="roomId" v-else search  @on-search="search" enter-button="Search" placeholder="请输入群ID" />
+        </div>
+        <div v-if="searchResult" class="search-result">
+          <div class="item" style="display:flex;flex-direction:row" v-if="searchResult.id">
+            <img :src="searchResult && searchResult.avatar" style="width:60px;height:60px" alt="头像">
+            <span style="display:flex;flex-direction:column">
+              <span>{{ searchResult.username }}</span>
+              <Button v-if="showAddFriends" @click="add(searchResult)">加好友</Button>
+              <Button v-else>加入群</Button>
+            </span>
+          </div>
+          <div style="text-align:center" v-else>
+            查询无果!
+          </div>
         </div>
       </div>
     </Modal>
@@ -53,7 +66,7 @@
 
 <script>
 import { mapGetters } from "vuex";
-import { Row, Col, Badge, Icon, Modal, Divider, Input } from "iview";
+import { Row, Col, Badge, Icon, Modal, Divider, Input, Button } from "iview";
 export default {
   name: "m-sider",
   computed: {
@@ -67,7 +80,8 @@ export default {
     Icon,
     Modal,
     Divider,
-    Input
+    Input,
+    Button
   },
   data() {
     return {
@@ -79,21 +93,37 @@ export default {
       footer: true,
       id: '',
       roomId:'',
+      searchResult:null,
     };
   },
   mounted() {
     // this.getFriendsList();
   },
   methods: {
-    async searchId(){
-      if(this.id=='')return;
-      let res = await this.$http.Common.getUserByName(this.id);
-      console.log(res.data.data)
-      console.log(this.id)
+    add(item){
+      let id = JSON.parse(localStorage.getItem('userinfo')).id
+      this.$socket.emit('message',{
+        from: id,
+        to: item.id,
+        type:'add_friends'
+      });
+      this.$Message.success('您的好友添加请求已经成功发送，正在等待对方确认。');
     },
-    searchRoomId(){
-      if(this.id=='')return;
-      console.log(this.id)
+    async search(){
+      if(this.showAddFriends){
+        //search friends
+        if(this.id=='')return;
+        let res = await this.$http.Common.getUserByName(this.id);
+        if(res && res.data.status ==200 && res.data.data){
+          res.data.data.avatar = 'http://img1.imgtn.bdimg.com/it/u=3824684417,1120865232&fm=26&gp=0.jpg';
+          this.searchResult = res.data.data;
+        }else{
+          this.searchResult = { message:'查询无果'};
+        }
+        console.log(res.data.data)
+      }else{
+        //search rooms
+      }
     },
     searchFreind() {
       this.showAddFriends = true;
@@ -102,6 +132,9 @@ export default {
       this.showAddFriends = false;
     },
     openModal() {
+      this.id = '';
+      this.roomId = '';
+      this.searchResult=null;
       console.log("open");
       this.modal = true;
     },
@@ -204,6 +237,13 @@ export default {
   }
   .addModal {
     text-align: center;
+    .search-result{
+      .item{
+        text-align: left;
+        display: flex;
+        flex-direction: row;
+    }
+    }
   }
 }
 .searchModal /deep/ .ivu-input {

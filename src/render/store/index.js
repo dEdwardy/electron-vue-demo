@@ -44,7 +44,11 @@ export default new Vuex.Store({
     },
     GET_MESSAGE(state, data) {
       // console.log(state.common.messages)
-      state.common.messages.push(data);
+      if(Array.isArray(data)){
+        state.common.messages = [...data,...state.common.messages]
+      }else{
+        state.common.messages.push(data);
+      }
       // state.common.messages = [...data,...state.common.messages];
     },
     READ_MESSAGE(state) {
