@@ -4,7 +4,11 @@
       <div class="friends" @click="chatTo(friend)">
         <Row class="friend">
           <Col span="7">
-            <img :src="friend.avatar" class="avatar" :class="friend.online ? 'online' : 'offline'" />
+            <img
+              :src="friend.avatar"
+              class="avatar"
+              :class="friend.online ? 'online' : 'offline'"
+            />
           </Col>
           <Col span="14">
             <div class="username">
@@ -27,6 +31,28 @@
         </Row>
       </div>
     </div>
+    <div v-for="message in addFriendsMessages" :key="message.date">
+      <div class="message" @click="handleMessage(message)">
+        <Row>
+          <Col span="7">
+            <img :src="message.avatar" class="avatar online" />
+          </Col>
+          <Col span="14">
+            <div class="username">
+              <span>{{ message.username || "未读消息" }}</span>
+            </div>
+            <div class="content">
+              <span>
+                {{ message.content }}
+              </span>
+            </div>
+          </Col>
+          <Col span="3">
+            <Badge class="badge" :count="countNum" type="error"></Badge>
+          </Col>
+        </Row>
+      </div>
+    </div>
     <Icon type="ios-add-circle addFriends" @click.stop="openModal" size="40" />
     <Modal
       v-model="modal"
@@ -37,21 +63,53 @@
       :footer-hide="footer"
     >
       <div class="addModal" slot="header" style="text-align:center">
-        <span :style="{'color':showAddFriends? 'rgb(1,136,251)':''}" @click.stop="searchFreind">找好友</span>
+        <span
+          :style="{ color: showAddFriends ? 'rgb(1,136,251)' : '' }"
+          @click.stop="searchFreind"
+          >找好友</span
+        >
         <Divider type="vertical" />
-        <span :style="{'color':showAddFriends? '':'rgb(1,136,251)'}" @click.stop="searchRoom">找群</span>
+        <span
+          :style="{ color: showAddFriends ? '' : 'rgb(1,136,251)' }"
+          @click.stop="searchRoom"
+          >找群</span
+        >
       </div>
       <div>
         <div style="padding:10px 0 30px 0">
-          <Input v-model.trim="id" v-if="showAddFriends" search @on-search="search" enter-button="Search" placeholder="请输入ID" />
-          <Input v-model.trim="roomId" v-else search  @on-search="search" enter-button="Search" placeholder="请输入群ID" />
+          <Input
+            v-model.trim="id"
+            v-if="showAddFriends"
+            search
+            @on-search="search"
+            enter-button="Search"
+            placeholder="请输入ID"
+          />
+          <Input
+            v-model.trim="roomId"
+            v-else
+            search
+            @on-search="search"
+            enter-button="Search"
+            placeholder="请输入群ID"
+          />
         </div>
         <div v-if="searchResult" class="search-result">
-          <div class="item" style="display:flex;flex-direction:row" v-if="searchResult.id">
-            <img :src="searchResult && searchResult.avatar" style="width:60px;height:60px" alt="头像">
+          <div
+            class="item"
+            style="display:flex;flex-direction:row"
+            v-if="searchResult.id"
+          >
+            <img
+              :src="searchResult && searchResult.avatar"
+              style="width:60px;height:60px"
+              alt="头像"
+            />
             <span style="display:flex;flex-direction:column">
               <span>{{ searchResult.username }}</span>
-              <Button v-if="showAddFriends" @click="add(searchResult)">加好友</Button>
+              <Button v-if="showAddFriends" @click="add(searchResult)"
+                >加好友</Button
+              >
               <Button v-else>加入群</Button>
             </span>
           </div>
@@ -70,8 +128,27 @@ import { Row, Col, Badge, Icon, Modal, Divider, Input, Button } from "iview";
 export default {
   name: "m-sider",
   computed: {
-    ...mapGetters(["onlineList", "friendsList", "messages"])
-    //1.friend当前在线 2.有未读消息 3.没有和当前friend聊天
+    ...mapGetters(["onlineList", "friendsList", "messages"]),
+    addFriendsMessages() {
+      if (this.messages.length > 0) {
+        let data = this.messages.map(i => {
+          if (i.type == "add_friends") {
+            return i;
+          }
+        });
+        console.warn(data);
+        data.forEach(i => {
+          i.avatar =
+            "http://pic4.zhimg.com/50/v2-0019ec92840b3cda9c12445d4452e4a5_hd.jpg";
+          i.username = "新朋友";
+          i.content = '**申请添加你为好友'
+        });
+        console.warn(data);
+        return data;
+      } else {
+        return [];
+      }
+    }
   },
   components: {
     Row,
@@ -91,37 +168,57 @@ export default {
       draggable: true,
       showAddFriends: true,
       footer: true,
-      id: '',
-      roomId:'',
-      searchResult:null,
+      id: "",
+      roomId: "",
+      searchResult: null,
+      countNum: 1,
     };
   },
   mounted() {
     // this.getFriendsList();
   },
   methods: {
-    add(item){
-      let id = JSON.parse(localStorage.getItem('userinfo')).id
-      this.$socket.emit('message',{
+    async handleMessage(message){
+     this.$Modal.confirm({
+                    title: '好友申请',
+                    content: message.content,
+                    okText: '同意',
+                    cancelText: '拒绝',
+                    onOk: async() => {
+                        await this.$socket.emit('handle_add_friend',{...message, accept:true })
+                        this.$Message.info('Clicked ok');
+                    },
+                    onCancel: async() => {
+                        await this.$socket.emit('handle_add_friend',{ ...message, accept:false})
+                        this.$Message.info('Clicked cancel');
+                    }
+                });
+      await this.$socket.emit('')
+
+    },
+    add(item) {
+      let id = JSON.parse(localStorage.getItem("userinfo")).id;
+      this.$socket.emit("message", {
         from: id,
         to: item.id,
-        type:'add_friends'
+        type: "add_friends"
       });
-      this.$Message.success('您的好友添加请求已经成功发送，正在等待对方确认。');
+      this.$Message.success("您的好友添加请求已经成功发送，正在等待对方确认。");
     },
-    async search(){
-      if(this.showAddFriends){
+    async search() {
+      if (this.showAddFriends) {
         //search friends
-        if(this.id=='')return;
+        if (this.id == "") return;
         let res = await this.$http.Common.getUserByName(this.id);
-        if(res && res.data.status ==200 && res.data.data){
-          res.data.data.avatar = 'http://img1.imgtn.bdimg.com/it/u=3824684417,1120865232&fm=26&gp=0.jpg';
+        if (res && res.data.status == 200 && res.data.data) {
+          res.data.data.avatar =
+            "http://img1.imgtn.bdimg.com/it/u=3824684417,1120865232&fm=26&gp=0.jpg";
           this.searchResult = res.data.data;
-        }else{
-          this.searchResult = { message:'查询无果'};
+        } else {
+          this.searchResult = { message: "查询无果" };
         }
-        console.log(res.data.data)
-      }else{
+        console.log(res.data.data);
+      } else {
         //search rooms
       }
     },
@@ -132,9 +229,9 @@ export default {
       this.showAddFriends = false;
     },
     openModal() {
-      this.id = '';
-      this.roomId = '';
-      this.searchResult=null;
+      this.id = "";
+      this.roomId = "";
+      this.searchResult = null;
       console.log("open");
       this.modal = true;
     },
@@ -237,12 +334,12 @@ export default {
   }
   .addModal {
     text-align: center;
-    .search-result{
-      .item{
+    .search-result {
+      .item {
         text-align: left;
         display: flex;
         flex-direction: row;
-    }
+      }
     }
   }
 }
@@ -284,5 +381,29 @@ export default {
   filter: url("about:blank");
   filter: grayscale(0);
   filter: rgb;
+}
+.message {
+  cursor: pointer;
+  &:hover {
+    background-color: rgb(235, 235, 236);
+  }
+  img.avatar {
+    width: 40px;
+    height: 40px;
+    margin: 8px 12px;
+    border-radius: 50%;
+  }
+  .username {
+    font-size: 16px;
+    margin-top: 14px;
+  }
+  .content {
+    color: #545454;
+    font-size: 14px;
+    margin-bottom: 14px;
+  }
+  .badge {
+        margin: 19px 0;
+      }
 }
 </style>

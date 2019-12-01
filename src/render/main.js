@@ -11,7 +11,7 @@ import 'iview/dist/styles/iview.css';
 // import './mock'
 import { Icon, Button, Form, FormItem, Input, Radio,Message,Layout,Header,Menu, Sider,Content,
   Submenu,
-  MenuItem,Breadcrumb,BreadcrumbItem } from 'iview';
+  MenuItem,Breadcrumb,BreadcrumbItem, Modal} from 'iview';
 Vue.config.productionTip = false;
 Vue.config.devtools = true;
 Vue.use(new VueSocketIO({
@@ -33,9 +33,11 @@ Vue.use(Submenu)
 Vue.use(MenuItem)
 Vue.use(Breadcrumb)
 Vue.use(BreadcrumbItem)
+Vue.use(Modal)
 
 Vue.prototype.$http = Axios;
 Vue.prototype.$Message = Message;
+Vue.prototype.$Modal = Modal;
 global._ = loadsh;
 
 new Vue({

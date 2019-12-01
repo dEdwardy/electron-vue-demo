@@ -36,7 +36,8 @@ export default {
       console.log({ online, messages})
       if(messages && messages.length > 0){
         let m = messages.map(i => JSON.parse(i))
-        this.commit('SET_MESSAGER',m);
+        console.log(m)
+        this.$store.commit('GET_MESSAGE',m);
       }
       let data = online;
       this.$store.commit("SET_ONLINE_LIST", data);

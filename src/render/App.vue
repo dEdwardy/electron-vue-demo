@@ -45,7 +45,7 @@ export default {
     }
     //在页面刷新时将vuex里的信息保存到localStorage里
     window.addEventListener("beforeunload", () => {
-      localStorage.setItem("store", JSON.stringify(this.$store.state));
+      // localStorage.setItem("store", JSON.stringify(this.$store.state));
     });
   }
 };
